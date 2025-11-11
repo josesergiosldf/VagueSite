@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Painel - VAGUE{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>Sugestões de Mods</h1>
+                <p class="header-subtitle">Colabore e organize seu modpack de Minecraft</p>
+            </div>
+            <button class="btn btn-primary btn-large" onclick="openSuggestionModal()">
+                <i class="fas fa-plus-circle"></i> Nova Sugestão
+            </button>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card pending">
+            <div class="stat-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="pending-count">0</h3>
+                <p>Pendentes</p>
+            </div>
+        </div>
+        <div class="stat-card approved">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="approved-count">0</h3>
+                <p>Aprovados</p>
+            </div>
+        </div>
+        <div class="stat-card rejected">
+            <div class="stat-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="rejected-count">0</h3>
+                <p>Rejeitados</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="filters">
+        <button class="filter-btn active" data-filter="all">Todos</button>
+        <button class="filter-btn" data-filter="pending">Pendente</button>
+        <button class="filter-btn" data-filter="approved">Aprovado</button>
+        <button class="filter-btn" data-filter="rejected">Rejeitado</button>
+    </div>
+
+    <div class="board-container">
+        <div class="board-column" data-status="pending">
+            <div class="column-header pending">
+                <i class="fas fa-clock"></i>
+                <h2>Pendente</h2>
+                <span class="count">0</span>
+            </div>
+            <div class="cards-container" id="pending-cards"></div>
+        </div>
+
+        <div class="board-column" data-status="approved">
+            <div class="column-header approved">
+                <i class="fas fa-check-circle"></i>
+                <h2>Aprovado</h2>
+                <span class="count">0</span>
+            </div>
+            <div class="cards-container" id="approved-cards"></div>
+        </div>
+
+        <div class="board-column" data-status="rejected">
+            <div class="column-header rejected">
+                <i class="fas fa-times-circle"></i>
+                <h2>Rejeitado</h2>
+                <span class="count">0</span>
+            </div>
+            <div class="cards-container" id="rejected-cards"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Suggestion Modal -->
+<div id="suggestionModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2><i class="fas fa-plus-circle"></i> Sugerir um Mod</h2>
+            <button class="close-btn" onclick="closeSuggestionModal()">&times;</button>
+        </div>
+        <form id="suggestionForm">
+            <div class="form-group">
+                <label for="mod_name">Nome do Mod *</label>
+                <input type="text" id="mod_name" name="mod_name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="mod_url">URL do Mod * (CurseForge ou Modrinth)</label>
+                <input type="url" id="mod_url" name="mod_url" required>
+                <small class="source-indicator" id="sourceIndicator"></small>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Descrição <span id="charCount" class="char-count">0/500</span></label>
+                <textarea id="description" name="description" rows="4" maxlength="500"></textarea>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeSuggestionModal()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Enviar Sugestão
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Rejection Modal -->
+<div id="rejectionModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2><i class="fas fa-exclamation-circle"></i> Rejeitar Mod</h2>
+            <button class="close-btn" onclick="closeRejectionModal()">&times;</button>
+        </div>
+        <form id="rejectionForm">
+            <input type="hidden" id="reject_mod_id">
+            <div class="form-group">
+                <label for="rejection_reason">Motivo da Rejeição *</label>
+                <textarea id="rejection_reason" name="rejection_reason" rows="4" required></textarea>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeRejectionModal()">Cancelar</button>
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-times"></i> Rejeitar Mod
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const isAdmin = {{ 'true' if current_user.is_admin else 'false' }};
+</script>
+{% endblock %}
